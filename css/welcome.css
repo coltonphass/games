@@ -1,0 +1,13 @@
+body {
+    background-image: url("../images/big-chungus.png");
+    background-size: cover;
+    background-position: top;
+    background-repeat: no-repeat;
+    background-color: cornsilk;
+}
+
+#blackjack {
+    width: 200px;
+    height: 100px;
+    font-size: 20px;
+}

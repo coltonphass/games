@@ -1,0 +1,30 @@
+body {
+    font-family: sans-serif;
+    font-size: 20px;
+}
+
+#hit,
+#stay,
+#retry,
+#blackjack {
+    width: 40%;       /* base width on desktop/tablet */
+    max-width: 300px; /* don’t let it get too wide */
+    min-width: 150px;
+    height: 60px;
+    font-size: 18px;
+    margin: 10px;
+}
+
+/* Mobile override */
+@media screen and (max-width: 800px) {
+  #hit,
+  #stay,
+  #retry,
+  #blackjack {
+    width: 80%;        /* take more screen space on small screens */
+    height: 60px;
+    font-size: 18px;
+    margin: 10px auto;
+    display: block;
+  }
+}

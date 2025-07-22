@@ -1,0 +1,32 @@
+body {
+    text-align: center;
+    background-color: green;
+}
+
+#dealer-cards img,
+#your-cards img {
+    height: 175px;
+    width: 125px;
+    margin: 5px; /* add spacing between cards */
+    border-radius: 6px; /* optional: soften corners */
+}
+
+#hit, #stay, #retry {
+    width: 100px;
+    height: 50px;
+    font-size: 20px;
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media screen and (max-width: 800px) {
+  .button-row {
+    flex-direction: column;
+    align-items: center;
+  }
+}
