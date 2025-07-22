@@ -60,7 +60,7 @@ function startGame() {
         cardContainer.classList.add("card-flip");
 
         let cardImg = document.createElement("img");
-        cardImg.src = "../cards/" + card + ".png";
+        cardImg.src = "../cards/" + card + ".webp";
         cardImg.classList.add("card-face");
 
         cardContainer.appendChild(cardImg);
@@ -79,7 +79,7 @@ function startGame() {
         cardContainer.classList.add("card-flip");
 
         let cardImg = document.createElement("img");
-        cardImg.src = "../cards/" + card + ".png";
+        cardImg.src = "../cards/" + card + ".webp";
         cardImg.classList.add("card-face");
 
         cardContainer.appendChild(cardImg);
@@ -111,7 +111,7 @@ function hit() {
     cardContainer.classList.add("card-flip");
 
     let cardImg = document.createElement("img");
-    cardImg.src = "../cards/" + card + ".png";
+    cardImg.src = "../cards/" + card + ".webp";
     cardImg.classList.add("card-face");
 
     cardContainer.appendChild(cardImg);
@@ -131,7 +131,7 @@ function hit() {
     if (yourSum > 21) {
         canHit = false;
         document.getElementById("results").innerText = "You Busted!";
-        document.getElementById("hidden").src = "../cards/" + hidden + ".png";
+        document.getElementById("hidden").src = "../cards/" + hidden + ".webp";
     } else if (yourSum === 21) {
         canHit = false;
     }
@@ -147,7 +147,7 @@ function stay() {
     yourAceCount = yourResult.aceCount;
 
     canHit = false;
-    document.getElementById("hidden").src = "../cards/" + hidden + ".png";
+    document.getElementById("hidden").src = "../cards/" + hidden + ".webp";
 
     let message = "";
     if (yourSum > 21) {
