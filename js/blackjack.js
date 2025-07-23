@@ -7,13 +7,16 @@ let yourAceCount = 0;
 let hidden;
 let deck;
 
+let gameTurn = "player";
+let dealerThinking = false;
+
 let canHit = true;
+let gameOver = false;
 
 window.onload = function() {
     buildDeck();
     shuffleDeck();
     startGame();
-    
 }
 
 function buildDeck() {
@@ -39,28 +42,28 @@ function shuffleDeck() {
 }
 
 function startGame() {
-    hidden = deck.pop();
+    // Deal initial 2 cards to dealer
+    hidden = deck.pop(); // Dealer's hole card (face down)
     dealerSum += getValue(hidden);
     dealerAceCount += checkAce(hidden);
+    
+    // Dealer's face up card
+    let dealerUpCard = deck.pop();
+    dealerSum += getValue(dealerUpCard);
+    dealerAceCount += checkAce(dealerUpCard);
+    
+    // Display dealer's face up card
+    let cardContainer = document.createElement("div");
+    cardContainer.classList.add("card-flip");
+    
+    let cardImg = document.createElement("img");
+    cardImg.src = "../cards/" + dealerUpCard + ".webp";
+    cardImg.classList.add("card-face");
+    
+    cardContainer.appendChild(cardImg);
+    document.getElementById("dealer-cards").appendChild(cardContainer);
 
-    while (dealerSum < 17) {
-        let card = deck.pop();
-
-        let cardContainer = document.createElement("div");
-        cardContainer.classList.add("card-flip");
-
-        let cardImg = document.createElement("img");
-        cardImg.src = "../cards/" + card + ".webp";
-        cardImg.classList.add("card-face");
-
-        cardContainer.appendChild(cardImg);
-        document.getElementById("dealer-cards").appendChild(cardContainer);
-
-        dealerSum += getValue(card);
-        dealerAceCount += checkAce(card);
-
-    }
-
+    // Deal initial 2 cards to player
     for (let i = 0; i < 2; i++) {
         let card = deck.pop();
 
@@ -80,7 +83,18 @@ function startGame() {
         window.playCardFlip();
     }
 
+    // Reduce aces for player's initial hand
+    let result = reduceAce(yourSum, yourAceCount);
+    yourSum = result.sum;
+    yourAceCount = result.aceCount;
+
     updateYourSumDisplay();
+
+    // Check for player blackjack
+    if (yourSum === 21) {
+        canHit = false;
+        stay(); // Automatically go to dealer's turn
+    }
 
     document.getElementById("hit").addEventListener("click", hit);
     document.getElementById("stay").addEventListener("click", stay);
@@ -92,7 +106,7 @@ function updateYourSumDisplay() {
 }
 
 function hit() {
-    if (!canHit) return;
+    if (!canHit || gameOver || gameTurn !== "player") return;
 
     let card = deck.pop();
 
@@ -115,65 +129,111 @@ function hit() {
 
     updateYourSumDisplay();
 
-    // Check bust or continue
+    // Play card flip sound
+    window.playCardFlip();
+
+    // Check if player busted
     if (yourSum > 21) {
         canHit = false;
+        gameOver = true;
         document.getElementById("results").innerText = "You Busted!";
         document.getElementById("dealer-sum").innerText = dealerSum;
         document.getElementById("hidden").src = "../cards/" + hidden + ".webp";
-
-        // Play lose sound
         window.playYouLose();
-    } else {
-        // Play card flip sound only if not busted
-        window.playCardFlip();
-    }
-
-    if (yourSum === 21) {
+    } else if (yourSum === 21) {
+        // Player got 21, automatically stay
         canHit = false;
+        stay();
     }
 }
 
 function stay() {
-    let dealerResult = reduceAce(dealerSum, dealerAceCount);
-    dealerSum = dealerResult.sum;
-    dealerAceCount = dealerResult.aceCount;
-
-    let yourResult = reduceAce(yourSum, yourAceCount);
-    yourSum = yourResult.sum;
-    yourAceCount = yourResult.aceCount;
+    if (gameOver || gameTurn !== "player") return;
 
     canHit = false;
-    document.getElementById("hidden").src = "../cards/" + hidden + ".webp";
+    gameTurn = "dealer";
 
-    let message = "";
-    if (yourSum > 21) {
-        message = "You Lose!";
-        window.playYouLose()
-    } else if (dealerSum > 21) {
-        message = "You Win!";
-        window.playYouWin()
-    } else if (yourSum === dealerSum) {
-        message = "Tie!";
-        window.playYouTie()
-    } else if (yourSum > dealerSum) {
-        message = "You Win!";
-        window.playYouWin()
-    } else {
-        message = "You Lose!";
-        window.playYouLose()
+    // Reveal dealer's hole card
+    document.getElementById("hidden").src = "../cards/" + hidden + ".webp";
+    
+    // Don't show dealer sum yet - wait until dealer is done
+
+    startDealerTurn();
+}
+
+function startDealerTurn() {
+    if (gameOver) return;
+    
+    dealerThinking = true;
+    document.getElementById("results").innerText = "Dealer is thinking...";
+
+    function dealerAct() {
+        if (gameOver) return;
+
+        // Reduce aces before making decision
+        let result = reduceAce(dealerSum, dealerAceCount);
+        dealerSum = result.sum;
+        dealerAceCount = result.aceCount;
+
+        // Proper blackjack dealer rules: hit on 16 or less, stand on 17 or more
+        let action = dealerSum < 17 ? "hit" : "stay";
+
+        if (action === "hit") {
+            let card = deck.pop();
+            dealerSum += getValue(card);
+            dealerAceCount += checkAce(card);
+
+            let cardContainer = document.createElement("div");
+            cardContainer.classList.add("card-flip");
+
+            let cardImg = document.createElement("img");
+            cardImg.src = "../cards/" + card + ".webp";
+            cardImg.classList.add("card-face");
+
+            cardContainer.appendChild(cardImg);
+            document.getElementById("dealer-cards").appendChild(cardContainer);
+
+            // Reduce aces after hitting
+            let bustCheck = reduceAce(dealerSum, dealerAceCount);
+            dealerSum = bustCheck.sum;
+            dealerAceCount = bustCheck.aceCount;
+
+            // Update dealer sum display
+            document.getElementById("dealer-sum").innerText = dealerSum;
+
+            window.playCardFlip();
+
+            // Check if dealer busted
+            if (dealerSum > 21) {
+                dealerThinking = false;
+                gameOver = true;
+                setTimeout(() => {
+                    determineWinner();
+                }, 500); // Small delay to let the bust sink in
+                return; // End immediately on bust
+            }
+
+            // Continue dealer's turn after delay if not busted
+            setTimeout(dealerAct, 1000);
+        } else {
+            // Dealer stays
+            dealerThinking = false;
+            gameOver = true;
+            // Show final dealer sum when dealer is done
+            document.getElementById("dealer-sum").innerText = dealerSum;
+            determineWinner();
+        }
     }
 
-    document.getElementById("dealer-sum").innerText = dealerSum;
-    updateYourSumDisplay();
-    document.getElementById("results").innerText = message;
+    // Initial delay before dealer starts acting
+    setTimeout(dealerAct, 1000);
 }
 
 function retry() {
     window.playButtonClick();
     setTimeout(() => {
         window.location.reload(true);
-    }, 125);  // wait 125ms before reloading
+    }, 125);
 }
 
 function getValue(card) {
@@ -197,4 +257,37 @@ function reduceAce(playerSum, playerAceCount) {
         playerAceCount--;
     }
     return { sum: playerSum, aceCount: playerAceCount };
+}
+
+function determineWinner() {
+    // Final ace reduction for both hands
+    let dealerResult = reduceAce(dealerSum, dealerAceCount);
+    dealerSum = dealerResult.sum;
+
+    let yourResult = reduceAce(yourSum, yourAceCount);
+    yourSum = yourResult.sum;
+
+    let message = "";
+    
+    if (yourSum > 21) {
+        message = "You Lose! (Bust)";
+        window.playYouLose();
+    } else if (dealerSum > 21) {
+        message = "You Win! (Dealer Bust)";
+        window.playYouWin();
+    } else if (yourSum === dealerSum) {
+        message = "Push! (Tie)";
+        window.playYouTie();
+    } else if (yourSum > dealerSum) {
+        message = "You Win!";
+        window.playYouWin();
+    } else {
+        message = "You Lose!";
+        window.playYouLose();
+    }
+
+    // Update final displays
+    document.getElementById("dealer-sum").innerText = dealerSum;
+    updateYourSumDisplay();
+    document.getElementById("results").innerText = message;
 }
