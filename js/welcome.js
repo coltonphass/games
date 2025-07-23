@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const blackjackButton = document.getElementById("blackjack");
 
     blackjackButton.addEventListener("click", () => {
-        window.buttonClickSound.play();
+        window.playButtonClick();
         // Delay navigation so sound can start playing
         setTimeout(goToBlackjack, 60);
     });
