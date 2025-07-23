@@ -1,53 +1,34 @@
-// Get base path of the current HTML page to sounds folder
-// Assuming sounds/ folder is at root of project, alongside index.html
-const basePath = window.location.pathname.includes("/html/") ? "../sounds/" : "sounds/";
+const basePath = window.location.pathname.includes("/html/") ? "../../sounds/" : "../sounds/";
 
-window.cardFlipSound = new Audio(basePath + "card-flip.wav");
+// Object to store sounds
+window.sounds = {};
 
-window.playCardFlip = function() {
-    if (!window.cardFlipSound.paused) {
-        window.cardFlipSound.pause();
-        window.cardFlipSound.currentTime = 0;
-    }
-    window.cardFlipSound.play();
-};
-
-window.buttonClickSound = new Audio(basePath + "button-click.mp3");
-
-window.playButtonClick = function() {
-    if (!window.buttonClickSound.paused) {
-        window.buttonClickSound.pause();
-        window.buttonClickSound.currentTime = 0;
-    }
-    window.buttonClickSound.play();
-};
-
-window.youLoseSound = new Audio(basePath + "you-lose.wav")
-
-window.playYouLose = function(){
-        if (!window.youLoseSound.paused) {
-        window.youLoseSound.pause();
-        window.youLoseSound.currentTime = 0;
-    }
-    window.youLoseSound.play();
+// Create and store sound
+function createSound(name, filename) {
+    window.sounds[name] = new Audio(basePath + filename);
 }
 
-window.youWinSound = new Audio(basePath + "you-win.wav")
-
-window.playYouWin = function(){
-        if (!window.youWinSound.paused) {
-        window.youWinSound.pause();
-        window.youWinSound.currentTime = 0;
+// Play sound by name
+function playSound(name) {
+    const sound = window.sounds[name];
+    if (!sound) return;
+    if (!sound.paused) {
+        sound.pause();
+        sound.currentTime = 0;
     }
-    window.youWinSound.play();
+    sound.play();
 }
 
-window.youTieSound = new Audio(basePath + "you-tie.wav")
+// Initialize sounds
+createSound("cardFlip", "card-flip.wav");
+createSound("buttonClick", "button-click.mp3");
+createSound("youLose", "you-lose.wav");
+createSound("youWin", "you-win.wav");
+createSound("youTie", "you-tie.wav");
 
-window.playYouTie = function(){
-        if (!window.youTieSound.paused) {
-        window.youTieSound.pause();
-        window.youTieSound.currentTime = 0;
-    }
-    window.youTieSound.play();
-}
+// Public play functions
+window.playCardFlip = () => playSound("cardFlip");
+window.playButtonClick = () => playSound("buttonClick");
+window.playYouLose = () => playSound("youLose");
+window.playYouWin = () => playSound("youWin");
+window.playYouTie = () => playSound("youTie");
