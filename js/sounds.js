@@ -41,3 +41,13 @@ window.playYouWin = function(){
     }
     window.youWinSound.play();
 }
+
+window.youTieSound = new Audio(basePath + "you-tie.wav")
+
+window.playYouTie = function(){
+        if (!window.youTieSound.paused) {
+        window.youTieSound.pause();
+        window.youTieSound.currentTime = 0;
+    }
+    window.youTieSound.play();
+}

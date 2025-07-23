@@ -155,6 +155,7 @@ function stay() {
         window.playYouWin()
     } else if (yourSum === dealerSum) {
         message = "Tie!";
+        window.playYouTie()
     } else if (yourSum > dealerSum) {
         message = "You Win!";
         window.playYouWin()
