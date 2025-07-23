@@ -18,16 +18,29 @@ body {
 }
 
 .button-row {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;       /* NO wrapping, always one row */
+  gap: 10px;
+  max-width: 100%;         /* full width container */
+  margin: 0 auto;
+  overflow-x: auto;        /* allow horizontal scroll if needed */
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+}
+
+.button-row button {
+  flex: 1 1 auto;          /* allow shrinking */
+  min-width: 100px;        /* buttons won’t get smaller than 100px */
+  max-width: 300px;        /* optional max width */
+  height: 60px;
+  font-size: 18px;
+  box-sizing: border-box;
+  white-space: nowrap;     /* prevent button text wrapping */
 }
 
 @media screen and (max-width: 800px) {
   .button-row {
-    flex-direction: column;
-    align-items: center;
+    max-width: 100%;
   }
 }
 

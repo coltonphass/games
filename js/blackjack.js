@@ -1,5 +1,3 @@
-const cardFlipSound = new Audio("../sounds/card-flip.wav");
-
 let dealerSum = 0;
 let yourSum = 0;
 
@@ -15,6 +13,7 @@ window.onload = function() {
     buildDeck();
     shuffleDeck();
     startGame();
+    
 }
 
 function buildDeck() {
@@ -39,15 +38,6 @@ function shuffleDeck() {
     console.log(deck);
 }
 
-function playCardFlip() {
-    // Prevent overlapping sound
-    if (!cardFlipSound.paused) {
-        cardFlipSound.pause();
-        cardFlipSound.currentTime = 0;
-    }
-    cardFlipSound.play();
-}
-
 function startGame() {
     hidden = deck.pop();
     dealerSum += getValue(hidden);
@@ -69,7 +59,6 @@ function startGame() {
         dealerSum += getValue(card);
         dealerAceCount += checkAce(card);
 
-        playCardFlip();
     }
 
     for (let i = 0; i < 2; i++) {
@@ -88,7 +77,7 @@ function startGame() {
         yourSum += getValue(card);
         yourAceCount += checkAce(card);
 
-        playCardFlip();
+        window.playCardFlip();
     }
 
     updateYourSumDisplay();
@@ -126,13 +115,21 @@ function hit() {
 
     updateYourSumDisplay();
 
-    playCardFlip();
-
+    // Check bust or continue
     if (yourSum > 21) {
         canHit = false;
         document.getElementById("results").innerText = "You Busted!";
+        document.getElementById("dealer-sum").innerText = dealerSum;
         document.getElementById("hidden").src = "../cards/" + hidden + ".webp";
-    } else if (yourSum === 21) {
+
+        // Play lose sound
+        window.playYouLose();
+    } else {
+        // Play card flip sound only if not busted
+        window.playCardFlip();
+    }
+
+    if (yourSum === 21) {
         canHit = false;
     }
 }
@@ -152,14 +149,18 @@ function stay() {
     let message = "";
     if (yourSum > 21) {
         message = "You Lose!";
+        window.playYouLose()
     } else if (dealerSum > 21) {
         message = "You Win!";
+        window.playYouWin()
     } else if (yourSum === dealerSum) {
         message = "Tie!";
     } else if (yourSum > dealerSum) {
         message = "You Win!";
+        window.playYouWin()
     } else {
         message = "You Lose!";
+        window.playYouLose()
     }
 
     document.getElementById("dealer-sum").innerText = dealerSum;
@@ -168,7 +169,10 @@ function stay() {
 }
 
 function retry() {
-    window.location.reload(true);
+    window.playButtonClick();
+    setTimeout(() => {
+        window.location.reload(true);
+    }, 125);  // wait 125ms before reloading
 }
 
 function getValue(card) {

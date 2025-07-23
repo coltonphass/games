@@ -1,13 +1,29 @@
 body {
-    background-image: url("../images/big-chungus.png");
-    background-size: cover;
-    background-position: top;
-    background-repeat: no-repeat;
-    background-color: cornsilk;
+  background-image: url("../images/big-chungus.png");
+  background-size: contain;       /* or try 'cover' if you want it to fill fully */
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-color: cornsilk;
+  background-attachment: fixed;   /* <-- makes bg image fixed in viewport */
+  margin: 0;                     /* reset margin to avoid unexpected gaps */
+  min-height: 100vh;             /* make sure body fills viewport height */
+  font-family: sans-serif;
+  font-size: 20px;
+
 }
 
 #blackjack {
-    width: 200px;
-    height: 100px;
+    width: 150px;
+    height: 50px;
     font-size: 20px;
+}
+
+.game-button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1, p {
+    text-align: center;
 }
