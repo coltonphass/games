@@ -1,13 +1,16 @@
-function goToBlackjack() {
-    window.location.href = "html/blackjack.html";
+function goToGame(gameName) {
+  window.location.href = 'html/' + gameName + '.html';
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const blackjackButton = document.getElementById("blackjack");
+document.addEventListener('DOMContentLoaded', () => {
+  // Select all buttons inside the game-button div
+  let buttons = document.querySelectorAll('.game-button button');
 
-    blackjackButton.addEventListener("click", () => {
-        window.playButtonClick();
-        // Delay navigation so sound can start playing
-        setTimeout(goToBlackjack, 60);
+  for (let button of buttons) {
+    button.addEventListener('click', (event) => {
+      window.playButtonClick();
+      const gameName = event.currentTarget.id;
+      setTimeout(() => goToGame(gameName), 60);
     });
+  }
 });
