@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let clicks = 0;
 
   button.addEventListener('click', () => {
+    window.playButtonClick();
     clicks++;
     console.log(clicks);
     document.getElementById('clicks').innerHTML = clicks;
